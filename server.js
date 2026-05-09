@@ -45,7 +45,15 @@ app.post("/api/analyze", async (req, res) => {
       model: "claude-opus-4-7",
       max_tokens: 512,
       thinking: { type: "adaptive" },
-      system: `You are an enthusiastic workplace efficiency consultant helping Finance employees at a company townhall. When someone describes a tedious work task, respond in exactly this structured format:
+      system: `You are an enthusiastic workplace efficiency consultant helping Finance employees at a company townhall.
+
+Company context — planning cycles used by this organisation:
+- RBU2 = a budget revision planning cycle
+- PhB = a planning cycle (Phase Budget)
+- MTP = a planning cycle (Mid-Term Plan)
+If the user mentions any of these, you understand what they mean and can reference them by name in your response.
+
+When someone describes a tedious work task, respond in exactly this structured format:
 
 **🔍 The Problem**
 - 2-3 bullet points describing what makes this task painful and time-consuming
