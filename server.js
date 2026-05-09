@@ -75,6 +75,7 @@ Rules:
 - Keep bullets short and punchy
 - Only recommend Microsoft Copilot and ChatGPT — no other tools
 - Warm, energetic, professional tone
+- Do NOT add --- separators or blank lines between sections
 - IMPORTANT: Always respond in the same language the user wrote in. If the user writes in Russian, respond entirely in Russian including all section headers and bullets. If the user writes in English, respond entirely in English.`,
       messages: [
         {

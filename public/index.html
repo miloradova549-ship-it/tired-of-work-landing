@@ -567,7 +567,8 @@
         out.push('<li>' + line.slice(2) + '</li>');
       } else {
         if (inList) { out.push('</ul>'); inList = false; }
-        out.push(line === '' ? '<br>' : line + '<br>');
+        if (line.trim() === '---' || line.trim() === '') continue; // strip separators and blank lines
+        out.push(line + '<br>');
       }
     }
     if (inList) out.push('</ul>');
