@@ -468,14 +468,14 @@
             if (text) {
               if (!started) { textEl.innerHTML = ''; started = true; }
               fullText += text;
-              textEl.innerHTML = escapeHtml(fullText) + '<span class="cursor-blink"></span>';
+              textEl.innerHTML = renderMarkdown(fullText) + '<span class="cursor-blink"></span>';
             }
           } catch (_) {}
         }
       }
 
-      // Finalise — remove cursor
-      textEl.textContent = fullText;
+      // Finalise — render markdown, remove cursor
+      textEl.innerHTML = renderMarkdown(fullText);
 
       // Reveal OR + funny option after AI finishes
       pickRandomOption();
@@ -504,6 +504,20 @@
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;');
+  }
+
+  function renderMarkdown(str) {
+    return escapeHtml(str)
+      // Bold: **text**
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      // Italic: *text*
+      .replace(/\*(.+?)\*/g, '<em>$1</em>')
+      // Bullet points: lines starting with -
+      .replace(/^- (.+)$/gm, '<li>$1</li>')
+      // Wrap consecutive <li> in <ul>
+      .replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>')
+      // Line breaks
+      .replace(/\n/g, '<br>');
   }
 
   // Ctrl/Cmd + Enter shortcut
