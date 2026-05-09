@@ -197,6 +197,9 @@
       min-height: 40px;
     }
 
+    #responseText ul { margin: 4px 0 8px 20px; padding: 0; }
+    #responseText li { margin: 2px 0; line-height: 1.6; }
+
     .cursor-blink {
       display: inline-block;
       width: 2px;
@@ -348,8 +351,8 @@
 <div class="response-wrap" id="responseWrap">
   <div class="response-card">
     <div class="response-meta">
-      <span class="badge">AI Proposal</span>
-      <span class="response-heading">Here's how to escape this forever 🚀</span>
+      <span class="badge" id="responseBadge">AI Proposal</span>
+      <span class="response-heading" id="responseHeading">Here's how to escape this forever 🚀</span>
     </div>
     <div id="responseText">
       <div class="dots"><span></span><span></span><span></span></div>
@@ -359,7 +362,7 @@
 
 <!-- ══ OR ════════════════════════════════════════════ -->
 <div class="or-section" id="orSection">
-  <div class="or-word">OR</div>
+  <div class="or-word" id="orWord">OR</div>
   <div class="or-tagline" id="orTagline">if innovation is overrated, there are always alternatives…</div>
 </div>
 
@@ -508,9 +511,10 @@
 
       // Reveal OR + funny option after AI finishes
       const russian = isRussian(input);
-      document.getElementById('orTagline').textContent = russian
-        ? 'если инновации переоценены, всегда есть альтернативы…'
-        : 'if innovation is overrated, there are always alternatives…';
+      document.getElementById('responseBadge').textContent  = russian ? 'ИИ-анализ' : 'AI Proposal';
+      document.getElementById('responseHeading').textContent = russian ? 'Вот как избавиться от этого навсегда 🚀' : 'Here\'s how to escape this forever 🚀';
+      document.getElementById('orWord').textContent    = russian ? 'ИЛИ' : 'OR';
+      document.getElementById('orTagline').textContent = russian ? 'если инновации переоценены, всегда есть альтернативы…' : 'if innovation is overrated, there are always alternatives…';
       pickRandomOption(russian);
       document.getElementById('orSection').classList.add('show');
       document.getElementById('funnySection').classList.add('show');
@@ -524,9 +528,10 @@
 
       // Still reveal a funny option on error
       const russian = isRussian(input);
-      document.getElementById('orTagline').textContent = russian
-        ? 'если инновации переоценены, всегда есть альтернативы…'
-        : 'if innovation is overrated, there are always alternatives…';
+      document.getElementById('responseBadge').textContent  = russian ? 'ИИ-анализ' : 'AI Proposal';
+      document.getElementById('responseHeading').textContent = russian ? 'Вот как избавиться от этого навсегда 🚀' : 'Here\'s how to escape this forever 🚀';
+      document.getElementById('orWord').textContent    = russian ? 'ИЛИ' : 'OR';
+      document.getElementById('orTagline').textContent = russian ? 'если инновации переоценены, всегда есть альтернативы…' : 'if innovation is overrated, there are always alternatives…';
       pickRandomOption(russian);
       document.getElementById('orSection').classList.add('show');
       document.getElementById('funnySection').classList.add('show');
@@ -544,17 +549,30 @@
   }
 
   function renderMarkdown(str) {
-    return escapeHtml(str)
-      // Bold: **text**
+    // Escape HTML
+    let escaped = escapeHtml(str);
+    // Bold and italic
+    escaped = escaped
       .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-      // Italic: *text*
-      .replace(/\*(.+?)\*/g, '<em>$1</em>')
-      // Bullet points: lines starting with -
-      .replace(/^- (.+)$/gm, '<li>$1</li>')
-      // Wrap consecutive <li> in <ul>
-      .replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>')
-      // Line breaks
-      .replace(/\n/g, '<br>');
+      .replace(/\*([^*\n]+?)\*/g, '<em>$1</em>');
+
+    // Process line by line to handle bullets without extra gaps
+    const lines = escaped.split('\n');
+    const out = [];
+    let inList = false;
+
+    for (const line of lines) {
+      if (line.startsWith('- ')) {
+        if (!inList) { out.push('<ul>'); inList = true; }
+        out.push('<li>' + line.slice(2) + '</li>');
+      } else {
+        if (inList) { out.push('</ul>'); inList = false; }
+        out.push(line === '' ? '<br>' : line + '<br>');
+      }
+    }
+    if (inList) out.push('</ul>');
+
+    return out.join('').replace(/<br><ul>/g, '<ul>').replace(/<\/ul><br>/g, '</ul><br>');
   }
 
   // Ctrl/Cmd + Enter shortcut
