@@ -21,6 +21,19 @@ app.post("/api/analyze", async (req, res) => {
   res.setHeader("Cache-Control", "no-cache");
   res.setHeader("Connection", "keep-alive");
 
+  // DEMO MODE: streams a fake response when no API key is set
+  if (!process.env.ANTHROPIC_API_KEY) {
+    const mockText = `Great news — this is exactly the kind of task that AI handles brilliantly! You could use Power Automate or Zapier to set up an automated workflow that does this for you in seconds, every time, without you lifting a finger. Tools like ChatGPT or Claude can also draft, summarise, or extract data from documents and emails automatically. As a first step, try opening Power Automate (it's already in your Microsoft 365) and search for a template matching your task — you might be surprised how close a ready-made solution already is.`;
+    const words = mockText.split(" ");
+    for (const word of words) {
+      res.write(`data: ${JSON.stringify({ text: word + " " })}\n\n`);
+      await new Promise(r => setTimeout(r, 40));
+    }
+    res.write("data: [DONE]\n\n");
+    res.end();
+    return;
+  }
+
   try {
     const stream = client.messages.stream({
       model: "claude-opus-4-7",
