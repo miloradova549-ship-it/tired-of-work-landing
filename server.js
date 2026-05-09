@@ -42,9 +42,8 @@ app.post("/api/analyze", async (req, res) => {
 
   try {
     const stream = client.messages.stream({
-      model: "claude-opus-4-7",
+      model: "claude-sonnet-4-6",
       max_tokens: 512,
-      thinking: { type: "adaptive" },
       system: `You are an enthusiastic workplace efficiency consultant helping Finance employees at a company townhall.
 
 Company context — planning cycles used by this organisation:
