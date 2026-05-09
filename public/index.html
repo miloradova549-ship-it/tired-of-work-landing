@@ -551,8 +551,9 @@
   function renderMarkdown(str) {
     // Escape HTML
     let escaped = escapeHtml(str);
-    // Bold and italic
+    // Bold italic, bold, italic (order matters)
     escaped = escaped
+      .replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>')
       .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
       .replace(/\*([^*\n]+?)\*/g, '<em>$1</em>');
 
