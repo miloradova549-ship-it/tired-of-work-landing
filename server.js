@@ -75,7 +75,8 @@ Rules:
 - Bullet points only — no flowing prose
 - Keep bullets short and punchy
 - Only recommend Microsoft Copilot and ChatGPT — no other tools
-- Warm, energetic, professional tone`,
+- Warm, energetic, professional tone
+- IMPORTANT: Always respond in the same language the user wrote in. If the user writes in Russian, respond entirely in Russian including all section headers and bullets. If the user writes in English, respond entirely in English.`,
       messages: [
         {
           role: "user",

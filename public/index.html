@@ -360,7 +360,7 @@
 <!-- ══ OR ════════════════════════════════════════════ -->
 <div class="or-section" id="orSection">
   <div class="or-word">OR</div>
-  <div class="or-tagline">if innovation is overrated, there are always alternatives…</div>
+  <div class="or-tagline" id="orTagline">if innovation is overrated, there are always alternatives…</div>
 </div>
 
 <!-- ══ FUNNY OPTION (single, randomised) ═════════════ -->
@@ -378,7 +378,7 @@
   // ─── FUNNY OPTIONS LIST ──────────────────────────────────────────────────
   // Review and edit these before going live. Each entry needs:
   //   emoji, title, desc, url, cta
-  const FUNNY_OPTIONS = [
+  const FUNNY_OPTIONS_EN = [
     {
       emoji: '🥂',
       title: 'Buy a Bottle of Prosecco',
@@ -401,10 +401,39 @@
       cta: 'Find cheap flights →',
     },
   ];
+
+  const FUNNY_OPTIONS_RU = [
+    {
+      emoji: '🥂',
+      title: 'Купить бутылку Просекко',
+      desc: 'Отпразднуй выживание ещё одной недели с этой задачей. Ты заслужил(а). Наука согласна.',
+      url: 'https://simplewine.ru/catalog/product/prosecco_argeo_075_156614/?r=sameVintage',
+      cta: 'Купить →',
+    },
+    {
+      emoji: '💊',
+      title: 'Заказать Магне B6 Форте',
+      desc: 'Потому что твоя нервная система многое пережила. Поддержка, одобренная врачами (наверное).',
+      url: 'https://www.eapteka.ru/search/?q=%D0%BC%D0%B0%D0%B3%D0%BD%D0%B5+b6+%D1%84%D0%BE%D1%80%D1%82%D0%B5',
+      cta: 'Заказать →',
+    },
+    {
+      emoji: '🌴',
+      title: 'Только отпуск поможет в твоём случае',
+      desc: 'Забудь про автоматизацию — тебе нужен пляж, коктейль и ноль уведомлений.',
+      url: 'https://www.aviasales.ru/',
+      cta: 'Найти билеты →',
+    },
+  ];
+
+  function isRussian(text) {
+    return /[а-яёА-ЯЁ]/.test(text);
+  }
   // ─────────────────────────────────────────────────────────────────────────
 
-  function pickRandomOption() {
-    const opt = FUNNY_OPTIONS[Math.floor(Math.random() * FUNNY_OPTIONS.length)];
+  function pickRandomOption(russian) {
+    const list = russian ? FUNNY_OPTIONS_RU : FUNNY_OPTIONS_EN;
+    const opt = list[Math.floor(Math.random() * list.length)];
     document.getElementById('funnySection').innerHTML = `
       <a class="funny-card" href="${opt.url}" target="_blank" rel="noopener noreferrer">
         <div class="funny-emoji">${opt.emoji}</div>
@@ -478,7 +507,11 @@
       textEl.innerHTML = renderMarkdown(fullText);
 
       // Reveal OR + funny option after AI finishes
-      pickRandomOption();
+      const russian = isRussian(input);
+      document.getElementById('orTagline').textContent = russian
+        ? 'если инновации переоценены, всегда есть альтернативы…'
+        : 'if innovation is overrated, there are always alternatives…';
+      pickRandomOption(russian);
       document.getElementById('orSection').classList.add('show');
       document.getElementById('funnySection').classList.add('show');
       setTimeout(() => {
@@ -490,7 +523,11 @@
         'Oops — something went wrong. The Prosecco option is still a valid strategy.';
 
       // Still reveal a funny option on error
-      pickRandomOption();
+      const russian = isRussian(input);
+      document.getElementById('orTagline').textContent = russian
+        ? 'если инновации переоценены, всегда есть альтернативы…'
+        : 'if innovation is overrated, there are always alternatives…';
+      pickRandomOption(russian);
       document.getElementById('orSection').classList.add('show');
       document.getElementById('funnySection').classList.add('show');
     } finally {
