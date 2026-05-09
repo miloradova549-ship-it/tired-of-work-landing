@@ -5,7 +5,7 @@ import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
-const client = new Anthropic();
+const client = process.env.ANTHROPIC_API_KEY ? new Anthropic() : null;
 
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json());
