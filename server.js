@@ -1,11 +1,47 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { google } from "googleapis";
 import express from "express";
 import path from "path";
+import fs from "fs";
 import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 const client = process.env.ANTHROPIC_API_KEY ? new Anthropic() : null;
+
+// Google Sheets setup
+const SHEET_ID = "1Vgeu0AcIXQGDac_O1T66wd5yySZ01ndfTRjPBHW76A8";
+
+function getGoogleAuth() {
+  let credentials;
+  if (process.env.GOOGLE_CREDENTIALS_JSON) {
+    credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS_JSON);
+  } else {
+    try {
+      credentials = JSON.parse(fs.readFileSync("original-mason-496008-i2-925d00bd422b.json", "utf8"));
+    } catch {
+      return null;
+    }
+  }
+  return new google.auth.GoogleAuth({
+    credentials,
+    scopes: ["https://www.googleapis.com/auth/spreadsheets"],
+  });
+}
+
+async function logToSheet(task) {
+  const auth = getGoogleAuth();
+  if (!auth) return;
+  const sheets = google.sheets({ version: "v4", auth });
+  await sheets.spreadsheets.values.append({
+    spreadsheetId: SHEET_ID,
+    range: "Sheet1!A:B",
+    valueInputOption: "RAW",
+    requestBody: {
+      values: [[new Date().toISOString(), task]],
+    },
+  });
+}
 
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json());
@@ -16,6 +52,9 @@ app.post("/api/analyze", async (req, res) => {
   if (!task || task.trim().length === 0) {
     return res.status(400).json({ error: "Task is required" });
   }
+
+  // Log submission to Google Sheets (fire and forget)
+  logToSheet(task.trim()).catch((err) => console.error("Sheets error:", err.message));
 
   res.setHeader("Content-Type", "text/event-stream");
   res.setHeader("Cache-Control", "no-cache");
